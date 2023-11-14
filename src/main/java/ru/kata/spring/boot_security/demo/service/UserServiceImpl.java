@@ -11,7 +11,6 @@ import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import java.util.List;
 
 @Service
-@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
@@ -34,6 +33,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new NullPointerException("Значение не найдено в базе данных"));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User findByUsername(String username) {
         User user = userRepository.findByUsername(username);
@@ -43,21 +43,25 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Transactional
     @Override
     public void save(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
     }
 
+    @Transactional
     public void delete(User user) {
         userRepository.delete(user);
     }
 
+    @Transactional
     @Override
     public void update(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
